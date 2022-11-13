@@ -1,0 +1,31 @@
+version: '3'
+services:
+  jenkins:
+    build:
+      context: .
+      args:
+       - JENKINS_VERSION=lts-jdk11      
+    container_name: jenkins
+    image: jenkins
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "$PWD/jenkins_home:/var/jenkins_home"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    healthcheck:
+      test: curl -ISLs http://localhost:8080
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    networks:
+      - jenkins-network
+
+networks:
+  jenkins-network:
